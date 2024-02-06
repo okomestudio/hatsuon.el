@@ -1,0 +1,1 @@
+# hatsuon.el

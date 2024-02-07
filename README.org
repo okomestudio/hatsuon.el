@@ -1,0 +1,77 @@
+#+title:  hatsuon.el
+#+property: LOGGING nil
+
+An Emacs utility to add audio pronunciation functionality.
+
+* Contents :noexport:
+:PROPERTIES:
+:TOC:      :include siblings
+:END:
+:CONTENTS:
+- [[#installation][Installation]]
+- [[#usage][Usage]]
+- [[#changelog][Changelog]]
+- [[#development][Development]]
+- [[#license][License]]
+:END:
+
+* Installation
+:PROPERTIES:
+:TOC:      :depth 0
+:END:
+** MELPA
+
+This package is not on MELPA.
+
+** Manual
+
+Install the required packages:
+
+- ~emms~
+- ~request~
+- ~s~
+
+Then place ~hatsuon.el~ in your ~load-path~, and put the following line in your ~init.el~ file:
+
+#+begin_src elisp
+  (require 'hatsuon)
+#+end_src
+
+Or using ~use-package~ with ~straight~:
+
+#+begin_src elisp
+  (use-package hatsuon
+    :straight
+    (:host github :repo "okomestudio/hatsuon.el" :branch "main"))
+#+end_src
+
+* Usage
+:PROPERTIES:
+:TOC:      :depth 0
+:END:
+
+- ~hatsuon-play-audio~: Play the audio for the word
+- ~hatsuon-remove-cached-audio-file~: Remove an audio file cached locally
+
+* Changelog
+:PROPERTIES:
+:TOC:      :depth 0
+:END:
+** Alpha
+
+Initial release.
+
+* Development
+
+TBD.
+
+* License
+
+MIT
+
+# Local Variables:
+# eval: (require 'org-make-toc)
+# before-save-hook: org-make-toc
+# org-export-with-properties: ()
+# org-export-with-title: t
+# End:

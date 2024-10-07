@@ -1,7 +1,7 @@
 #+title:  hatsuon.el
 #+property: LOGGING nil
 
-An Emacs utility to add audio pronunciation functionality.
+Add the English pronunciation functionality to Emacs.
 
 * Contents :noexport:
 :PROPERTIES:
@@ -41,8 +41,18 @@ Or using ~use-package~ with ~straight~:
 
 #+begin_src elisp
   (use-package hatsuon
-    :straight
-    (:host github :repo "okomestudio/hatsuon.el" :branch "main"))
+    :straight (:host github :repo "okomestudio/hatsuon.el"))
+#+end_src
+
+By default, ~hatsuon.el~ pull audio from Wiktionary. To use audio from other sites, load their audio URL getter extension:
+
+#+begin_src elisp
+  (use-package hatsuon
+     :straight (:host github :repo "okomestudio/hatsuon.el"
+                      :files (:defaults "extensions/*"))
+     :custom (hatsuon-audio-url-getters '(hatsuon-mw-audio-url-getter))
+     :config
+     (require 'hatsuon-mw))
 #+end_src
 
 * Usage
@@ -57,6 +67,10 @@ Or using ~use-package~ with ~straight~:
 :PROPERTIES:
 :TOC:      :depth 0
 :END:
+** 0.1
+
+Add external audio getters as extensions.
+
 ** Alpha
 
 Initial release.

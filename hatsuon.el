@@ -25,7 +25,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; hatsuon.el adds the audio pronunciation functionality to Emacs.
+;; hatsuon.el adds the English pronunciation functionality to Emacs.
 ;;
 ;;;; Installation
 ;;
@@ -49,13 +49,13 @@
 ;; Or using use-package with straight:
 ;;
 ;; (use-package hatsuon
-;;   :straight (:host github :repo "okomestudio/hatsuon.el" :branch "main"))
+;;   :straight (:host github :repo "okomestudio/hatsuon.el"))
 ;;
 ;; By default, hatsuon.el pull audio from Wiktionary. To use audio
 ;; from other sites, load their audio URL getter extension:
 ;;
 ;; (use-package hatsuon
-;;   :straight (:host github :repo "okomestudio/hatsuon.el" :branch "main"
+;;   :straight (:host github :repo "okomestudio/hatsuon.el"
 ;;                    :files (:defaults "extensions/*"))
 ;;   :custom (hatsuon-audio-url-getters '(hatsuon-mw-audio-url-getter))
 ;;   :config

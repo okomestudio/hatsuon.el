@@ -1,10 +1,10 @@
-;;; hatsuon.el --- Audio pronunciation player  -*- lexical-binding: t -*-
+;;; hatsuon.el --- English pronunciation audio player  -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2024 Taro Sato
 ;;
 ;; Author: Taro Sato <okomestudio@gmail.com>
-;; Version: Alpha
-;; Package-Requires: ((emacs "28.1") (emms "18") (request "0.3.2") (s "1.13.0")
+;; Version: 0.1
+;; Package-Requires: ((emacs "29.1") (emms "18") (request "0.3.2") (s "1.13.0")
 ;; Keywords: multimedia, language learning
 ;; URL: https://github.com/okomestudio/hatsuon.el
 ;;
@@ -25,7 +25,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; hatsuon.el is an Emacs utility to add audio pronunciation functionality.
+;; hatsuon.el is a utility to add audio pronunciation functionality to Emacs.
 ;;
 ;;;; Installation
 ;;
@@ -49,8 +49,8 @@
 ;; Or using use-package with straight:
 ;;
 ;; (use-package hatsuon
-;;   :straight
-;;   (:host github :repo "okomestudio/hatsuon.el" :branch "main"))
+;;   :straight (:host github :repo "okomestudio/hatsuon.el" :branch "main"
+;;                    :files (:defaults "extensions/*")))
 ;;
 ;;;; Usage
 ;;
@@ -109,10 +109,8 @@
 ;;;; Commands
 
 ;;;###autoload
-
 (defun hatsuon-play-audio (&optional word)
   "Play the pronunciation audio for WORD.
-
 This interactive function tries first to get WORD from active
 region, at-point, and then user prompt."
   (interactive (list (hatsuon--string-general-get "Word: ")))
@@ -126,7 +124,6 @@ region, at-point, and then user prompt."
       (message "Pronunciation audio file not found for %s." word))))
 
 ;;;###autoload
-
 (defun hatsuon-remove-cached-audio-file (&optional audio-file)
   "Remove AUDIO-FILE from the audio cache directory."
   (interactive
@@ -140,11 +137,10 @@ region, at-point, and then user prompt."
 ;;;;; Public
 
 (defun hatsuon-audio-url-getter-wiktionary (word)
-  "Wiktionary audio URL getter for WORD."
+  "Get audio URL for WORD from Wiktionary."
   (let ((page-url (format "https://en.wiktionary.org/wiki/File:En-us-%s.ogg" word))
         (audio-file-regexp "\\.*\\(upload.wikimedia.org/wikipedia/commons/[0-9a-f]+/[0-9a-f]+/En-us-%s.ogg\\)\\.*")
         (audio-url nil))
-
     (defun hatsuon--audio-url-getter-on-success (&key data &rest _)
       (let* ((_ (string-match (format audio-file-regexp word) data))
              (matched (match-string 1 data)))
@@ -162,7 +158,6 @@ region, at-point, and then user prompt."
 
 (defun hatsuon--audio-files-get-from-cache (&optional word)
   "Get the audio files from cache for WORD.
-
 If WORD is not given, return all audio files."
   (let* ((pattern (format "%s\\.\\(%s\\)$"
                           (cond ((not word) ".+")
@@ -178,7 +173,6 @@ If WORD is not given, return all audio files."
 
 (defun hatsuon--string-general-get (prompt &optional initial history default inherit)
   "Read string from region, at-point, or PROMPT.
-
 If a region is active, get the string. If a region is not active,
 try `thing-at-point`. If no word is found, then prompt the user
 for word. See `read-string` for the meaning of INITIAL, HISTORY,
@@ -230,5 +224,4 @@ Use INDEX to specify a URL getter in AUDIO-URL-GETTERS."
 ;;;; Footer
 
 (provide 'hatsuon)
-
 ;;; hatsuon.el ends here

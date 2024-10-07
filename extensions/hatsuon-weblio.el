@@ -23,7 +23,7 @@
 ;;
 ;;; Code:
 
-(defun hatsuon-audio-url-getter-weblio (word)
+(defun hatsuon-weblio-audio-url-getter (word)
   "Get audio URL for WORD from Weblio."
   (format "https://weblio.hs.llnwd.net/e8/audio/%s.mp3" word))
 

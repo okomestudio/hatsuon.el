@@ -26,7 +26,7 @@
 (require 'hatsuon)
 (require 'request)
 
-(defun hatsuon-audio-url-getter-mw (word)
+(defun hatsuon-mw-audio-url-getter (word)
   "Get audio URL for WORD from Merriam-Webster."
   (let ((page-url (format "https://merriam-webster.com/dictionary/%s" word))
         (audio-file-regexp "\\.*\\(media.merriam-webster.com/audio/prons/en/us/mp3/[a-f]+/%s001.mp3\\)\\.*")

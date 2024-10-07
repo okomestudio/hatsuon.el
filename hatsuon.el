@@ -1,4 +1,4 @@
-;;; hatsuon.el --- English pronunciation audio player  -*- lexical-binding: t -*-
+;;; hatsuon.el --- English pronunciation player  -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2024 Taro Sato
 ;;
@@ -25,7 +25,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; hatsuon.el is a utility to add audio pronunciation functionality to Emacs.
+;; hatsuon.el adds the audio pronunciation functionality to Emacs.
 ;;
 ;;;; Installation
 ;;
@@ -49,8 +49,17 @@
 ;; Or using use-package with straight:
 ;;
 ;; (use-package hatsuon
+;;   :straight (:host github :repo "okomestudio/hatsuon.el" :branch "main"))
+;;
+;; By default, hatsuon.el pull audio from Wiktionary. To use audio
+;; from other sites, load their audio URL getter extension:
+;;
+;; (use-package hatsuon
 ;;   :straight (:host github :repo "okomestudio/hatsuon.el" :branch "main"
-;;                    :files (:defaults "extensions/*")))
+;;                    :files (:defaults "extensions/*"))
+;;   :custom (hatsuon-audio-url-getters '(hatsuon-mw-audio-url-getter))
+;;   :config
+;;   (require 'hatsuon-mw))
 ;;
 ;;;; Usage
 ;;
@@ -94,7 +103,9 @@
   "Audio URL getters."
   :type 'list)
 
-(defcustom hatsuon-audio-cache-dir (expand-file-name ".cache/hatsuon/" user-emacs-directory)
+(defcustom hatsuon-audio-cache-dir (expand-file-name
+                                    (convert-standard-filename ".cache/hatsuon/")
+                                    user-emacs-directory)
   "Cache directory for audio files."
   :type 'string)
 
@@ -189,16 +200,15 @@ DEFAULT, and INHERIT."
 
 (defun hatsuon--try-audio-url-getter (index word &optional audio-url-getters)
   "Get and play an audio for WORD using a URL getter.
-
 Use INDEX to specify a URL getter in AUDIO-URL-GETTERS."
   (let ((audio-url-getter (nth index (or audio-url-getters hatsuon-audio-url-getters))))
     (when audio-url-getter
-      (let ((url (funcall audio-url-getter word)))
+      (let ((audio-url (funcall audio-url-getter word)))
         (defun hatsuon--try-audio-url-getter-on-success (&key data &rest _)
           (let ((audio-file (file-name-concat hatsuon-audio-cache-dir
                                               (format "%s.%s"
                                                       word
-                                                      (file-name-extension url)))))
+                                                      (file-name-extension audio-url)))))
             (if (not (file-exists-p (file-name-parent-directory audio-file)))
                 (make-directory (file-name-parent-directory audio-file) t))
             (with-temp-buffer
@@ -211,15 +221,17 @@ Use INDEX to specify a URL getter in AUDIO-URL-GETTERS."
           (message "Error fetching audio file for '%s' usind %s" word audio-url-getter)
           (hatsuon--try-audio-url-getter (+ index 1) word))
 
-        (request url
-          :parser 'buffer-string
-          :status-code
-          '((200 . hatsuon--try-audio-url-getter-on-success)
-            (404 . hatsuon--try-audio-url-getter-on-error))
-          :error
-          (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
-                         (message "Got error: %S" error-thrown)
-                         (hatsuon--try-audio-url-getter (+ index 1) word))))))))
+        (if audio-url
+            (request audio-url
+              :parser 'buffer-string
+              :status-code
+              '((200 . hatsuon--try-audio-url-getter-on-success)
+                (404 . hatsuon--try-audio-url-getter-on-error))
+              :error
+              (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
+                             (message "Got error: %S" error-thrown)
+                             (hatsuon--try-audio-url-getter (+ index 1) word))))
+          (hatsuon--try-audio-url-getter-on-error))))))
 
 ;;;; Footer
 

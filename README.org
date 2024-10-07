@@ -79,10 +79,6 @@ Initial release.
 
 TBD.
 
-* License
-
-MIT
-
 # Local Variables:
 # eval: (require 'org-make-toc)
 # before-save-hook: org-make-toc

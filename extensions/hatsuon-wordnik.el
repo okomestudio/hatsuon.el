@@ -1,4 +1,4 @@
-;;; hatsuon-wordnik.el --- Merriam-Webster Plugin for Hatsuon  -*- lexical-binding: t -*-
+;;; hatsuon-wordnik.el --- Wordnik Plugin for Hatsuon  -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2024 Taro Sato
 ;;
@@ -22,6 +22,39 @@
 ;; This module provides an audio getter plugin for `hatsuon.el'.
 ;;
 ;;; Code:
+
+(require 'request)
+
+(defun hatsuon-wordnik--api-key ()
+  "Get Wordnik API key."
+  (plist-get (car (auth-source-search
+                   :host "api.wordnik.com"
+                   :requires '("api_key")))
+             :api_key))
+
+(defun hatsuon-wordnik-audio-url-getter (word)
+  "Get audio URL for WORD from Wordnik."
+  (let* ((api-key (hatsuon-wordnik--api-key))
+         (page-url (format (concat "https://api.wordnik.com"
+                                   "/v4/word.json/%s/audio"
+                                   "?useCanonical=false&limit=50"
+                                   "&api_key=%s")
+                           word api-key))
+         audio-url)
+    (defun hatsuon--audio-url-getter-on-success (&key data &rest _)
+      (let* ((items (json-parse-string data))
+             item audio-urls)
+        (dotimes (i (length items))
+          (setq item (elt items i))
+          (setq audio-urls (append audio-urls `(,(gethash "fileUrl" item)))))
+        (setq audio-url (elt audio-urls (1- (length items))))))
+
+    (request page-url
+      :sync t
+      :parser (lambda () (buffer-string))
+      :status-code '((200 . hatsuon--audio-url-getter-on-success)))
+
+    audio-url))
 
 (provide 'hatsuon-wordnik)
 ;;; hatsuon-wordnik.el ends here

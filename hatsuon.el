@@ -4,7 +4,7 @@
 ;;
 ;; Author: Taro Sato <okomestudio@gmail.com>
 ;; Version: 0.1
-;; Package-Requires: ((emacs "29.1") (emms "18") (request "0.3.2") (s "1.13.0")
+;; Package-Requires: ((emacs "29.1") (emms "18") (request "0.3.2") (s "1.13.0"))
 ;; Keywords: multimedia, language learning
 ;; URL: https://github.com/okomestudio/hatsuon.el
 ;;
@@ -205,10 +205,13 @@ Use INDEX to specify a URL getter in AUDIO-URL-GETTERS."
     (when audio-url-getter
       (let ((audio-url (funcall audio-url-getter word)))
         (defun hatsuon--try-audio-url-getter-on-success (&key data &rest _)
-          (let ((audio-file (file-name-concat hatsuon-audio-cache-dir
-                                              (format "%s.%s"
-                                                      word
-                                                      (file-name-extension audio-url)))))
+          (let* ((parsed-url (url-generic-parse-url audio-url))
+                 (url-path-comps (split-string (url-filename parsed-url) "?" nil))
+                 (url-path (car url-path-comps))
+                 (audio-file (file-name-concat hatsuon-audio-cache-dir
+                                               (format "%s.%s"
+                                                       word
+                                                       (file-name-extension url-path)))))
             (if (not (file-exists-p (file-name-parent-directory audio-file)))
                 (make-directory (file-name-parent-directory audio-file) t))
             (with-temp-buffer
